@@ -23,7 +23,7 @@ class SnoozeApp extends React.Component {
                     .set('X-API-Key', '1OYL0FAalZ1PtBXJKG0u03iwQQlwXBK57Hj4TFEp')
                     .set('accept', 'json')
                     .then(res => {
-                        console.log('POST request successful');
+                        // console.log('POST request successful');
                     })
                     .catch(err => {
                         console.log('Encountered an error: ', err);
@@ -39,19 +39,20 @@ class SnoozeApp extends React.Component {
             <div className="App">
                 <header className="App-header">
                     <div className="header">
-                        <img src={logo} className="App-logo" alt="logo" />
+                        <CSSTransition appear in classNames="item" timeout={500}>
+                            <img src={logo} className="App-logo" alt="logo" />
+                        </CSSTransition>
                         <span className="App-Title">snooZe</span>
                     </div>
-                    <div className="subtitle">An email reminder service... coming soon</div>
-                    {this.state.pageViews ? (
-                        <div className="pageCount">
-                            <CSSTransition appear in classNames="item" timeout={500}>
-                                <span>{this.state.pageViews}</span>
-                            </CSSTransition>
-                            <span className="pageHitsText"> page hits</span>
-                        </div>
-                    ) : null}
+
+                    <div className="subtitle">An email reminder service... coming soon!</div>
                 </header>
+                <div className={this.state.pageViews ? 'pageCount' : 'pageCountHidden'}>
+                    <CSSTransition appear in classNames="item" timeout={500}>
+                        <span>{this.state.pageViews}</span>
+                    </CSSTransition>
+                    <span className="pageHitsText">page hits</span>
+                </div>
             </div>
         );
     }

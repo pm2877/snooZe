@@ -29,7 +29,7 @@ class ReminderModule extends React.Component {
         const {emailSubject, recipients, emailBody} = values;
         const {startDate: reminderDate} = this.state;
 
-        const emailIds = recipients.split(/[{,\s}]/, 10);
+        const emailIds = recipients.split(/[{,\s}]/, 10).filter((str) => !!str);
 
         const subject = 'snooZed: '.concat(emailSubject);
         const body = emailBody;
@@ -44,6 +44,7 @@ class ReminderModule extends React.Component {
                     textBody: body,
                     htmlBody: body.concat('<br/><br/>This email was sent by <strong>snooZe US</strong><br/><br/>'),
                 },
+                gmtDate: new Date(reminderDate).toString(),
                 appendScheduleDateToBody: true,
             }) // sends a JSON post body
             .set('X-API-Key', '1OYL0FAalZ1PtBXJKG0u03iwQQlwXBK57Hj4TFEp')
@@ -102,7 +103,7 @@ class ReminderModule extends React.Component {
                     }}
                 >
                     {({errors, handleSubmit, handleChange, isSubmitting, isValid, status, values}) => (
-                        <Form id="reminder-form" loading={isSubmitting}>
+                        <Form id="reminder-form">
                             <label htmlFor="emailSubject">Remind me to</label>
                             <Field
                                 name="emailSubject"
@@ -112,7 +113,7 @@ class ReminderModule extends React.Component {
                             />
                             <ErrorMessage component="span" className="error" name="emailSubject" />
                             <label htmlFor="recipients">Email Address</label>
-                            <Field name="recipients" placeholder="abc@xyz.com, pqr@zyx.com" type="text" />
+                            <Field name="recipients" placeholder="john@gmail.com, study_group@yahoo.com" type="text" />
                             <ErrorMessage name="recipients" component="span" className="error" />
                             <label htmlFor="emailBody">Details</label>
                             <Field name="emailBody" type="text" as="textarea" placeholder="optional" />

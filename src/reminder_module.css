@@ -1,0 +1,50 @@
+.reminder-module {
+    padding: 20px;
+    min-height: fit-content;
+    font-family: 'Courier New';
+}
+
+.reminder-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.confirm-reminder-button {
+    max-width: 200px;
+}
+
+.react-datepicker-time__input {
+    min-width: fit-content;
+    max-width: 70px;
+    font-size: 14px;
+}
+
+input.react-datepicker-time__input {
+    border: 1px orange solid;
+}
+
+.react-datepicker__header__dropdown--select {
+    margin-top: 7px;
+}
+
+label {
+    font-size: 24px;
+    padding: 20px 10px;
+    flex-flow: wrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+input,
+textarea {
+    margin: 0 10px 0 20px;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: none;
+    border-style: none;
+    font-size: 14px;
+}

@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "snooZe",
+  "name": "snooZe - Email reminder service",
   "icons": [
     {
       "src": "favicon.ico",

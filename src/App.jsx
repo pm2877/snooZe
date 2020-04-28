@@ -1,12 +1,13 @@
 import React from 'react';
 import logo from './assets/snooze_logo.png';
 import './App.css';
-import superagent from '../node_modules/superagent/lib/node';
-import {CSSTransition} from '../node_modules/react-transition-group/cjs';
+import superagent from 'superagent';
+import {CSSTransition} from 'react-transition-group';
+import ReminderModule from './reminder_module.jsx';
 
 class SnoozeApp extends React.Component {
     state = {
-        pageViews: undefined
+        pageViews: undefined,
     };
     componentDidMount() {
         superagent
@@ -14,7 +15,7 @@ class SnoozeApp extends React.Component {
             .send() // sends a JSON post body
             .set('X-API-Key', '1OYL0FAalZ1PtBXJKG0u03iwQQlwXBK57Hj4TFEp')
             .set('accept', 'json')
-            .then(res => {
+            .then((res) => {
                 const pageViews = res.body.Items[0].pageViewCount;
                 this.setState({pageViews: pageViews});
                 superagent
@@ -22,14 +23,14 @@ class SnoozeApp extends React.Component {
                     .send({pageViewCount: 1}) // sends a JSON post body
                     .set('X-API-Key', '1OYL0FAalZ1PtBXJKG0u03iwQQlwXBK57Hj4TFEp')
                     .set('accept', 'json')
-                    .then(res => {
+                    .then((res) => {
                         // console.log('POST request successful');
                     })
-                    .catch(err => {
+                    .catch((err) => {
                         console.log('Encountered an error: ', err);
                     });
             })
-            .catch(err => {
+            .catch((err) => {
                 console.log('Encountered an error: ', err);
             });
     }
@@ -44,9 +45,8 @@ class SnoozeApp extends React.Component {
                         </CSSTransition>
                         <span className="App-Title">snooZe</span>
                     </div>
-
-                    <div className="subtitle">An email reminder service... coming soon!</div>
                 </header>
+                <ReminderModule />
                 <div className={this.state.pageViews ? 'pageCount' : 'pageCountHidden'}>
                     <CSSTransition appear in classNames="item" timeout={500}>
                         <span>{this.state.pageViews}</span>

@@ -1,71 +1,63 @@
 import React from 'react';
 import DatePicker from 'react-datepicker';
-import './reminder_module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import superagent from 'superagent';
+import {Formik, Field, Form, ErrorMessage} from 'formik';
+import * as Yup from 'yup';
+import {Modal, Button} from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './reminder_module.css';
 
 class ReminderModule extends React.Component {
     state = {
-        titleText: '',
-        descriptionText: '',
-        emailText: '',
+        showSuccessModal: false,
+        showFailureModal: false,
         startDate: new Date(),
-    };
-
-    handleTitleChange = (event) => {
-        this.setState({
-            titleText: event.target.value,
-        });
-    };
-
-    handleEmailChange = (event) => {
-        this.setState({
-            emailText: event.target.value,
-        });
-    };
-
-    handleDescriptionChange = (event) => {
-        this.setState({
-            descriptionText: event.target.value,
-        });
     };
 
     handleDateChange = (date) => {
         this.setState({
             startDate: date,
         });
-        console.log(this.state.startDate);
     };
 
-    handleSubmit = (event) => {
-        const emailIds = this.state.emailText.split(/[{,\s}]/, 5);
-        const emailSubject = 'snooZed: '.concat(this.state.titleText).slice(0, 40);
-        const emailBody = 'snooZed: '
-            .concat(this.state.titleText.slice(40, emailSubject.length))
-            .concat(this.state.descriptionText)
-            .slice(1000);
+    closeSuccessModal = () => {
+        this.setState({showSuccessModal: false});
+    };
+
+    handleSubmit = (values, setSubmitting, resetForm) => {
+        const {emailSubject, recipients, emailBody} = values;
+        const {startDate: reminderDate} = this.state;
+
+        const emailIds = recipients.split(/[{,\s}]/, 10);
+
+        const subject = 'snooZed: '.concat(emailSubject);
+        const body = emailBody;
 
         superagent
             .post('https://afvvxda1wl.execute-api.us-west-1.amazonaws.com/beta/reminders')
             .send({
-                dueDate: new Date(this.state.startDate).toISOString(),
+                dueDate: new Date(reminderDate).toISOString(),
                 email: {
                     to: emailIds,
-                    subject: emailSubject,
-                    textBody: emailBody,
-                    htmlBody: emailBody.concat('<br/><br/>This email was sent by <strong>snooZe US</strong><br/><br/>'),
+                    subject,
+                    textBody: body,
+                    htmlBody: body.concat('<br/><br/>This email was sent by <strong>snooZe US</strong><br/><br/>'),
                 },
                 appendScheduleDateToBody: true,
             }) // sends a JSON post body
             .set('X-API-Key', '1OYL0FAalZ1PtBXJKG0u03iwQQlwXBK57Hj4TFEp')
             .set('accept', 'json')
             .then((res) => {
-                console.log('Reminder created successfully: ', res);
+                // console.log('Reminder created successfully: ', res);
+                resetForm({});
+                setSubmitting(false);
+                this.setState({showSuccessModal: true});
             })
             .catch((err) => {
                 console.log('Encountered an error: ', err);
+                setSubmitting(false);
             });
-        event.preventDefault();
     };
 
     render() {
@@ -73,47 +65,75 @@ class ReminderModule extends React.Component {
 
         return (
             <div className="reminder-module">
-                <form onSubmit={this.handleSubmit} className="reminder-form">
-                    <label>
-                        Remind me to
-                        <input
-                            placeholder="eg. Cancel my netflix subscription"
-                            type="text"
-                            value={this.state.titleText}
-                            onChange={this.handleTitleChange}
-                        />
-                    </label>
-                    <label>
-                        Email
-                        <input type="text" value={this.state.emailText} onChange={this.handleEmailChange} />
-                    </label>
-                    <label>
-                        Details
-                        <textarea
-                            type="text"
-                            placeholder="Optional"
-                            value={this.state.descriptionText}
-                            onChange={this.handleDescriptionChange}
-                        />
-                    </label>
-                    <label>
-                        Remind me on
-                        <DatePicker
-                            placeholderText="Click to select a date"
-                            selected={this.state.startDate}
-                            showMonthDropdown
-                            showYearDropdown
-                            showTimeInput
-                            dropdownMode="select"
-                            minDate={currentDate}
-                            maxDate={new Date(new Date().setMonth(new Date().getMonth() + 60))}
-                            timeInputLabel="Time:"
-                            dateFormat="MM/dd/yyyy h:mm aa"
-                            onChange={this.handleDateChange}
-                        />
-                    </label>
-                    <input type="submit" value="Create Reminder" className="confirm-reminder-button" />
-                </form>
+                <Modal show={this.state.showSuccessModal} onHide={this.closeSuccessModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Success!</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>The reminder was created successfully.</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={this.closeSuccessModal}>
+                            Awesome!
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+                <Formik
+                    initialValues={{emailSubject: '', recipients: '', emailBody: ''}}
+                    validationSchema={Yup.object({
+                        emailSubject: Yup.string().max(40, 'Must be 40 characters or less').required('Required'),
+                        emailBody: Yup.string().max(1000, 'Must be 1000 characters or less'),
+                        recipients: Yup.array()
+                            .transform(function (value, originalValue) {
+                                if (this.isType(value) && value !== null) {
+                                    return value;
+                                }
+                                return originalValue ? originalValue.split(/[{,\s}]/, 10) : [];
+                            })
+                            .of(Yup.string().email(({value}) => `${value} is not a valid email`))
+                            .required('Required'),
+                    })}
+                    onSubmit={(values, {setSubmitting, resetForm}) => {
+                        this.handleSubmit(values, setSubmitting, resetForm);
+                    }}
+                >
+                    {({errors, handleSubmit, handleChange, isSubmitting, isValid, status, values}) => (
+                        <Form id="reminder-form" loading={isSubmitting}>
+                            <label htmlFor="emailSubject">Remind me to</label>
+                            <Field
+                                name="emailSubject"
+                                type="text"
+                                placeholder="eg. Cancel my netflix subscription"
+                                className="reminder-info-field"
+                            />
+                            <ErrorMessage component="span" className="error" name="emailSubject" />
+                            <label htmlFor="recipients">Email Address</label>
+                            <Field name="recipients" placeholder="abc@xyz.com, pqr@zyx.com" type="text" />
+                            <ErrorMessage name="recipients" component="span" className="error" />
+                            <label htmlFor="emailBody">Details</label>
+                            <Field name="emailBody" type="text" as="textarea" placeholder="optional" />
+                            <ErrorMessage name="emailBody" component="span" className="error" />
+                            <label htmlFor="reminderDate">Remind me on</label>
+                            <DatePicker
+                                placeholderText="Click to select a date"
+                                selected={this.state.startDate}
+                                showMonthDropdown
+                                showYearDropdown
+                                showTimeInput
+                                dropdownMode="select"
+                                minDate={currentDate}
+                                maxDate={new Date(new Date().setMonth(new Date().getMonth() + 60))}
+                                timeInputLabel="Time:"
+                                dateFormat="MM/dd/yyyy h:mm aa"
+                                onChange={this.handleDateChange}
+                                className="datePicker"
+                            />
+                            <ErrorMessage component="span" name="reminderDate" className="error" />
+
+                            <button type="submit" className="confirm-reminder-button" disabled={isSubmitting}>
+                                Create Reminder
+                            </button>
+                        </Form>
+                    )}
+                </Formik>
             </div>
         );
     }

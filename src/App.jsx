@@ -1,9 +1,9 @@
 import React from 'react';
 import logo from './assets/snooze_logo.png';
-import './App.css';
 import superagent from 'superagent';
 import {CSSTransition} from 'react-transition-group';
 import ReminderModule from './reminder_module.jsx';
+import './App.css';
 
 class SnoozeApp extends React.Component {
     state = {

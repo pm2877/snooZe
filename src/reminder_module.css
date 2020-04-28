@@ -1,18 +1,14 @@
 .reminder-module {
-    padding: 20px;
+    padding: 0 20px 20px 20px;
     min-height: fit-content;
     font-family: 'Courier New';
 }
 
-.reminder-form {
+#reminder-form {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-}
-
-.confirm-reminder-button {
-    max-width: 200px;
 }
 
 .react-datepicker-time__input {
@@ -29,9 +25,22 @@ input.react-datepicker-time__input {
     margin-top: 7px;
 }
 
+.datePicker {
+    min-width: fit-content;
+}
+
+.confirm-reminder-button {
+    padding: 10px;
+    margin: 20px;
+    max-width: 500px;
+    min-width: 300px;
+    margin: 50px;
+    font-size: 20px;
+}
+
 label {
     font-size: 24px;
-    padding: 20px 10px;
+    padding: 20px 10px 0 10px;
     flex-flow: wrap;
     display: flex;
     align-items: center;
@@ -39,12 +48,27 @@ label {
     color: white;
 }
 
+.error {
+    color: red;
+}
+
 input,
-textarea {
-    margin: 0 10px 0 20px;
+textarea,
+button {
+    margin: 0 10px 0 10px;
     padding: 10px;
     border-radius: 5px;
     box-shadow: none;
     border-style: none;
     font-size: 14px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+input {
+    width: 70%;
+}
+
+textarea {
+    width: 40%;
+    height: 100px;
 }

@@ -86,7 +86,7 @@ class ReminderModule extends React.Component {
                 <Formik
                     initialValues={{emailSubject: '', recipients: '', emailBody: ''}}
                     validationSchema={Yup.object({
-                        emailSubject: Yup.string().max(40, 'Must be 40 characters or less').required('Required'),
+                        emailSubject: Yup.string().max(65, 'Must be 65 characters or less').required('Required'),
                         emailBody: Yup.string().max(1000, 'Must be 1000 characters or less'),
                         recipients: Yup.array()
                             .transform(function (value, originalValue) {

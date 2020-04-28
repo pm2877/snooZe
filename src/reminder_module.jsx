@@ -22,7 +22,7 @@ class ReminderModule extends React.Component {
     };
 
     closeSuccessModal = () => {
-        this.setState({showSuccessModal: false});
+        this.setState({showSuccessModal: false, showFailureModal: false});
     };
 
     handleSubmit = (values, setSubmitting, resetForm) => {
@@ -56,23 +56,29 @@ class ReminderModule extends React.Component {
             })
             .catch((err) => {
                 console.log('Encountered an error: ', err);
+                this.setState({showFailureModal: true});
                 setSubmitting(false);
             });
     };
 
     render() {
         const currentDate = new Date();
+        const {showSuccessModal, showFailureModal} = this.state;
 
         return (
             <div className="reminder-module">
-                <Modal show={this.state.showSuccessModal} onHide={this.closeSuccessModal}>
+                <Modal show={showSuccessModal || showFailureModal} onHide={this.closeSuccessModal}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Success!</Modal.Title>
+                        <Modal.Title>{showSuccessModal ? 'Success!' : 'Oops!'}</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>The reminder was created successfully.</Modal.Body>
+                    <Modal.Body>
+                        {showSuccessModal
+                            ? 'The reminder was created successfully. Feel free to create another one.'
+                            : 'There was a problem creating the reminder. Please try again in some time.'}
+                    </Modal.Body>
                     <Modal.Footer>
                         <Button variant="primary" onClick={this.closeSuccessModal}>
-                            Awesome!
+                            {showSuccessModal ? 'Awesome!' : 'Okay'}
                         </Button>
                     </Modal.Footer>
                 </Modal>
